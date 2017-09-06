@@ -47,7 +47,7 @@ function postData(history) {
         let article = data[i];
         articleShares(article.link).then(function(shares) {
           slack.webhook({
-            channel: '#parsely_alert',
+            channel: '#parselybot',
             username: 'thestar bot',
             'attachments':[
               {

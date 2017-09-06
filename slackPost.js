@@ -1,12 +1,12 @@
 'use strict';
-var config = require('./slackbotConfig');
+require('dotenv').config();
 var Slack = require('slack-node');
 var articleHits = require('./parselyFetch').articleHits;
 var articleShares = require('./parselyFetch').articleShares;
 
 function postData(history) {
   // set up slack incoming webhook
-  var webhookUri = config.webhookUri;
+  var webhookUri = process.env.WEBHOOK_URI;
   var slack = new Slack();
   slack.setWebhook(webhookUri);
 
@@ -15,7 +15,7 @@ function postData(history) {
     for (var i = 0; i < data.length; i++) {
       let text = '';
       var aboveThreshold = false;
-      var apiKey = config.apiKey;
+      var apiKey = process.env.API_KEY;
       var articleLink = 'http://dash.parsely.com/' + apiKey + '/find?url=' + data[i].link;
       var articleInfo = '<' + articleLink + '|' + data[i].title + '>' ;
       var current = history[data[i].link];

@@ -1,8 +1,7 @@
 var fetch = require('node-fetch');
-var config = require('./slackbotConfig');
 
-var apiKey = config.apiKey;
-var apiSecret = config.apiSecret;
+var apiKey = process.env.API_KEY;
+var apiSecret = process.env.API_SECRET;
 
 var baseUrl = 'https://api.parsely.com/v2';
 function articleHits() {

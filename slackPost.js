@@ -10,7 +10,7 @@ var Article = require('./articleSchema.js');
 function notifyAboveThreshold(link, text, slack, thumb_url_medium, author, click) {
   articleShares(link).then(function(shares) {
     slack.webhook({
-      channel: '#parsely_alert',
+      channel: '#parselybot',
       username: 'thestar bot',
       'attachments':[
         {
@@ -38,27 +38,25 @@ function notifyAboveThreshold(link, text, slack, thumb_url_medium, author, click
   }); // end of articleShares function
 } // end of notifyAboveThreshold function
 
-function isAboveThreshold(click, text, current, articleInfo, article) {
+function getThresholdText(click, current, articleInfo, article) {
+  var result = null;
   // check if above threshold, set the aboveThreshold to true, change text content
   if (click > 150000 && (current === undefined || current < 150000)) {
     //threshold above 150000
-    text = '@here :fire: :fire: :fire: 150KPV: ' + articleInfo;
+    result = '@here :fire: :fire: :fire: 150KPV: ' + articleInfo;
     article.history = 150000;
-    return true;
   } else if (click > 100000 && (current === undefined || current < 100000)) {
     //threshold above 100000
-    text = '@here :fire: :fire: 100KPV: ' + articleInfo;
+    result = '@here :fire: :fire: 100KPV: ' + articleInfo;
     article.history = 100000;
-    return true;
   } else if (click > 50000 && (current === undefined || current < 50000)) {
     //threshold above 50000
-    text = '@here :fire: 50KPV: ' + articleInfo;
+    result = '@here :fire: 50KPV: ' + articleInfo;
     article.history = 50000;
-    return true;
   }
 
   // below threshold, nothing happened, skip this loop
-  return false;
+  return result;
 } //end of checkThreshold function
 
 function postData() {
@@ -70,7 +68,7 @@ function postData() {
   // get article hits
   articleHits().then(function(data){
     for (var i = 0; i < data.length; i++) {
-      let text = '';
+      var text = '';
       var aboveThreshold = false;
       var apiKey = process.env.API_KEY;
       var articleLink = 'http://dash.parsely.com/' + apiKey + '/find?url=' + data[i].link;
@@ -103,13 +101,12 @@ function postData() {
             current = article.history;
           }
 
-          aboveThreshold = isAboveThreshold(click, text, current, articleInfo, article);
-          if ( aboveThreshold === true) {
-            console.log("checkThreshold is false!!");
-            notifyAboveThreshold(link, text, slack, thumb_url_medium, author, click);
-          } else {
+          text = getThresholdText(click, current, articleInfo, article);
+          if ( text === null) {
             return;
           }
+          notifyAboveThreshold(link, text, slack, thumb_url_medium, author, click);
+
         } //end of else meaning "article" has existed in db
 
         //save article

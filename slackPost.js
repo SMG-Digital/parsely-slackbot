@@ -11,7 +11,7 @@ function getThresholdText(click, current, articleInfo, article) {
   // check if above threshold, set the aboveThreshold to true, change text content
   if (click > 150000 && (current === undefined || current < 150000)) {
     //threshold above 150000
-    result = '@here :fire: :fire: :fire: 150KPVVVVVVV: ' + articleInfo;
+    result = '@here :fire: :fire: :fire: 150KPV: ' + articleInfo;
     article.history = 150000;
   } else if (click > 100000 && (current === undefined || current < 100000)) {
     //threshold above 100000
@@ -31,7 +31,7 @@ function notifyAboveThreshold(link, text, slack, thumb_url_medium, author, click
 
   articleShares(link).then(function(shares) {
     slack.webhook({
-      channel: '#parselybot',
+      channel: '#parsely_alert',
       username: 'thestar bot',
       'attachments':[
         {

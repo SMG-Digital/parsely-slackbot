@@ -10,7 +10,7 @@ var Article = require('./articleSchema.js');
 function notifyAboveThreshold(link, text, slack, thumb_url_medium, author, click) {
   articleShares(link).then(function(shares) {
     slack.webhook({
-      channel: '#parselybot',
+      channel: '#parsely_alert',
       username: 'thestar bot',
       'attachments':[
         {

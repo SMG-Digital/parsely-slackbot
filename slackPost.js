@@ -6,6 +6,61 @@ var articleHits = require('./parselyFetch').articleHits;
 var articleShares = require('./parselyFetch').articleShares;
 var Article = require('./articleSchema.js');
 
+
+function notifyAboveThreshold(link, text, slack, thumb_url_medium, author, click) {
+  articleShares(link).then(function(shares) {
+    slack.webhook({
+      channel: '#parselybot',
+      username: 'thestar bot',
+      'attachments':[
+        {
+           'fallback':text,
+           'pretext':text,
+           'thumb_url': thumb_url_medium,
+           'color':'#2ecc71',
+           'fields':[
+             {
+               'title': 'Author: ' + author,
+               'value': 'Hits: ' + click,
+               'short':'false',
+             },
+             {
+               'title': 'shares',
+               'value': 'Twitter: ' + shares[0].tw + ', Facebook: ' + shares[0].fb,
+               'short': 'true'
+             }
+           ]
+        }
+     ]
+    }, function(err, response) {
+      console.log(response);
+    }); // end of webhook function
+  }); // end of articleShares function
+} // end of notifyAboveThreshold function
+
+function isAboveThreshold(click, text, current, articleInfo, article) {
+  // check if above threshold, set the aboveThreshold to true, change text content
+  if (click > 150000 && (current === undefined || current < 150000)) {
+    //threshold above 150000
+    text = '@here :fire: :fire: :fire: 150KPV: ' + articleInfo;
+    article.history = 150000;
+    return true;
+  } else if (click > 100000 && (current === undefined || current < 100000)) {
+    //threshold above 100000
+    text = '@here :fire: :fire: 100KPV: ' + articleInfo;
+    article.history = 100000;
+    return true;
+  } else if (click > 50000 && (current === undefined || current < 50000)) {
+    //threshold above 50000
+    text = '@here :fire: 50KPV: ' + articleInfo;
+    article.history = 50000;
+    return true;
+  }
+
+  // below threshold, nothing happened, skip this loop
+  return false;
+} //end of checkThreshold function
+
 function postData() {
   // set up slack incoming webhook
   var webhookUri = process.env.WEBHOOK_URI;
@@ -36,7 +91,7 @@ function postData() {
         //find if article already exists in the collection
         if (article === null) {
           //if article hasn't been added to the collection, add the article
-          var article = new Article({
+          article = new Article({
               title: title,
               link: link,
               click: click,
@@ -48,62 +103,13 @@ function postData() {
             current = article.history;
           }
 
-          // check if above threshold, set the aboveThreshold to true, change text content
-          if (click > 150000 && (current === undefined || current < 150000)) {
-            //threshold above 150000
-            text = '@here :fire: :fire: :fire: 150KPV: ' + articleInfo;
-            aboveThreshold = true;
-            article.history = 150000;
-
-          } else if (click > 100000 && (current === undefined || current < 100000)) {
-            //threshold above 100000
-            text = '@here :fire: :fire: 100KPV: ' + articleInfo;
-            aboveThreshold = true;
-            article.history = 100000;
-
-          } else if (click > 50000 && (current === undefined || current < 50000)) {
-            //threshold above 50000
-            text = '@here :fire: 50KPV: ' + articleInfo;
-            aboveThreshold = true;
-            article.history = 50000;
-
+          aboveThreshold = isAboveThreshold(click, text, current, articleInfo, article);
+          if ( aboveThreshold === true) {
+            console.log("checkThreshold is false!!");
+            notifyAboveThreshold(link, text, slack, thumb_url_medium, author, click);
           } else {
-            // below threshold, nothing happened, skip this loop
             return;
           }
-
-
-          // if above any threshold, send to slack
-          if (aboveThreshold) {
-            articleShares(link).then(function(shares) {
-              slack.webhook({
-                channel: '#parselybot',
-                username: 'thestar bot',
-                'attachments':[
-                  {
-                     'fallback':text,
-                     'pretext':text,
-                     'thumb_url': thumb_url_medium,
-                     'color':'#2ecc71',
-                     'fields':[
-                       {
-                         'title': 'Author: ' + author,
-                         'value': 'Hits: ' + click,
-                         'short':'false',
-                       },
-                       {
-                         'title': 'shares',
-                         'value': 'Twitter: ' + shares[0].tw + ', Facebook: ' + shares[0].fb,
-                         'short': 'true'
-                       }
-                     ]
-                  }
-               ]
-              }, function(err, response) {
-                console.log(response);
-              }); // end of webhook function
-            }); // end of articleShares function
-          } //end of if aboveThreshold
         } //end of else meaning "article" has existed in db
 
         //save article

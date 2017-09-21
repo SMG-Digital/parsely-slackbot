@@ -4,7 +4,7 @@ var apiKey = process.env.API_KEY;
 var apiSecret = process.env.API_SECRET;
 
 var baseUrl = 'https://api.parsely.com/v2';
-function articleHits() {
+function popularHits() {
   var url = baseUrl + '/analytics/posts?apikey=' + apiKey + '&secret=' + apiSecret + '&page=1&limit=50&sort=views&period_start=24h';
   return fetch(url)
   .then(function(res) {
@@ -14,7 +14,7 @@ function articleHits() {
   });
 }
 
-function articleShares(articleUrl) {
+function popularShares(articleUrl) {
   var url = baseUrl + '/shares/post/detail?apikey=' + apiKey + '&secret=' + apiSecret + '&url=' + encodeURIComponent(articleUrl);
   return fetch(url)
   .then(function(res) {
@@ -25,6 +25,6 @@ function articleShares(articleUrl) {
 }
 
 module.exports = {
-  articleHits: articleHits,
-  articleShares: articleShares
+  popularHits: popularHits,
+  popularShares: popularShares
 };

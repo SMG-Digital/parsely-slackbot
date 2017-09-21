@@ -11,7 +11,11 @@ var articleSchema = new Schema({
     }
   },
   click: { type: Number, default: null },
-  history: { type: Number, default: null }
+  popularHistory: { type: Number, default: null },
+  momentumHistory: { type: Number, default: null },
+  engagementHistory: { type: Number, default: null },
+  referrerHistory: { type: Number, default: null },
+  appleLohHistory: { type: Number, default: null }
 });
 //create model
 module.exports = mongoose.model('Article', articleSchema);

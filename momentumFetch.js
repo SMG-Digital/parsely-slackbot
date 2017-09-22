@@ -1,27 +1,18 @@
-var fetch = require('node-fetch');
+var fetchUrl = require('./parselyClient').fetchUrl;
+var fetchDataByUrl = require('./parselyClient').fetchDataByUrl;
 
-var apiKey = process.env.API_KEY;
-var apiSecret = process.env.API_SECRET;
-
-var baseUrl = 'https://api.parsely.com/v2';
 function momentumHits() {
-  var url = baseUrl + '/analytics/posts?apikey=' + apiKey + '&secret=' + apiSecret + '&page=1&limit=50&sort=views&period_start=10mins';
-  return fetch(url)
-  .then(function(res) {
-    return res.json();
-  }).then(function(json) {
-    return json.data;
-  });
+  var type = '/analytics/posts';
+  var content = '&page=1&limit=50&sort=views&period_start=10mins';
+  var url = fetchUrl(type, content);
+  return fetchDataByUrl(url);
 }
 
 function momentumShares(articleUrl) {
-  var url = baseUrl + '/shares/post/detail?apikey=' + apiKey + '&secret=' + apiSecret + '&url=' + encodeURIComponent(articleUrl);
-  return fetch(url)
-  .then(function(res) {
-    return res.json();
-  }).then(function(json) {
-    return json.data;
-  });
+  var type = '/shares/post/detail';
+  var content = '&url=' + encodeURIComponent(articleUrl);
+  var url = fetchUrl(type, content);
+  return fetchDataByUrl(url);
 }
 
 module.exports = {

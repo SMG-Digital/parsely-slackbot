@@ -1,15 +1,10 @@
 var fetch = require('node-fetch');
+var fetchUrl = require('./parselyClient').fetchUrl;
+var fetchDataByUrl = require('./parselyClient').fetchDataByUrl;
 
-var apiKey = process.env.API_KEY;
-var apiSecret = process.env.API_SECRET;
-
-var baseUrl = 'https://api.parsely.com/v2';
-
-
-
-function checkArticle(items) {
-  if(items['source'] === 'thestar.com' && items['market'] === 'toronto') {
-    return items;
+function checkArticle(item) {
+  if(item['source'] === 'thestar.com' && item['market'] === 'toronto') {
+    return item;
   }
 }
 
@@ -22,8 +17,7 @@ function appleLohData() {
   }).then(function(json) {
     return json;
   }).then(function(items) {
-    var filteredArticle = items.items.filter(checkArticle);
-    return filteredArticle;
+    return items.items.filter(checkArticle);
   }).catch(function(err){
     console.log("error from appleLohData: ", err);
     done(err);
@@ -31,23 +25,17 @@ function appleLohData() {
 }
 
 function appleLohDetailedInfo(articleUrl) {
-  var url = baseUrl + '/analytics/post/detail?apikey=' + apiKey + '&secret=' + apiSecret + '&url=' + encodeURIComponent(articleUrl);
-  return fetch(url)
-  .then(function(res) {
-    return res.json();
-  }).then(function(json) {
-    return json.data;
-  });
+  var type = '/analytics/posts';
+  var content = '&url=' + encodeURIComponent(articleUrl);
+  var url = fetchUrl(type, content);
+  return fetchDataByUrl(url);
 }
 
 function appleLohShares(articleUrl) {
-  var url = baseUrl + '/shares/post/detail?apikey=' + apiKey + '&secret=' + apiSecret + '&url=' + encodeURIComponent(articleUrl);
-  return fetch(url)
-  .then(function(res) {
-    return res.json();
-  }).then(function(json) {
-    return json.data;
-  });
+  var type = '/shares/post/detail';
+  var content = '&url=' + encodeURIComponent(articleUrl);
+  var url = fetchUrl(type, content);
+  return fetchDataByUrl(url);
 }
 
 

@@ -1,3 +1,4 @@
+'use strict';
 var Article = require('./articleSchema.js');
 var momentumText = require('./momentumText.js');
 var momentumThreshold = require('./momentumThreshold.js');

@@ -1,3 +1,4 @@
+'use strict';
 var Article = require('./articleSchema.js');
 var engagementText = require('./engagementText.js');
 var engagementThreshold = require('./engagementThreshold.js');

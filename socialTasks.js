@@ -1,3 +1,4 @@
+'use strict';
 var Article = require('./articleSchema.js');
 var socialReferrer = require('./socialFetch').socialReferrer;
 var socialText = require('./socialText.js');

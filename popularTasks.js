@@ -1,3 +1,4 @@
+'use strict';
 var Article = require('./articleSchema.js');
 var popularText = require('./popularText.js');
 var popularThreshold = require('./popularThreshold.js');

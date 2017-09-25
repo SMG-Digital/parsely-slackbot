@@ -1,3 +1,4 @@
+'use strict';
 var Article = require('./articleSchema.js');
 var appleLohText = require('./appleLohText.js');
 var appleLohThreshold = require('./appleLohThreshold.js');

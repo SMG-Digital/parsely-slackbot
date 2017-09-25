@@ -1,3 +1,4 @@
+'use strict';
 require('dotenv').config();
 var Slack = require('slack-node');
 var mongoose = require('mongoose');
@@ -7,9 +8,9 @@ var appleLohDetailedInfo = require('./appleLohFetch').appleLohDetailedInfo;
 var async = require("async");
 var eachLimit = async.eachLimit;
 
-var findArticleAppleLohTask = require('./AppleLohTasks').findArticleAppleLohTask;
-var notifySlackAppleLohTask = require('./AppleLohTasks').notifySlackAppleLohTask;
-var saveArticleAppleLohTask = require('./AppleLohTasks').saveArticleAppleLohTask;
+var findArticleAppleLohTask = require('./appleLohTasks').findArticleAppleLohTask;
+var notifySlackAppleLohTask = require('./appleLohTasks').notifySlackAppleLohTask;
+var saveArticleAppleLohTask = require('./appleLohTasks').saveArticleAppleLohTask;
 
 const CONCURRENCY = 4;
 

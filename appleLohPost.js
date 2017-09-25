@@ -1,4 +1,3 @@
-'use strict';
 require('dotenv').config();
 var Slack = require('slack-node');
 var mongoose = require('mongoose');

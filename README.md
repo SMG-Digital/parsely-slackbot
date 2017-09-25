@@ -1,3 +1,3 @@
 # parsley-slackbot
 
-Commiting to master will deploy the code to heroku.
+Notify journalists via slackbot channel when articles become popular. 

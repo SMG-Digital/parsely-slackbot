@@ -3,7 +3,7 @@ var fetchDataByUrl = require('./parselyClient').fetchDataByUrl;
 
 function engagementHits() {
   var type = '/analytics/posts';
-  var content = '&page=1&limit=50&sort=avg_engaged&&pub_date_start=24h';
+  var content = '&page=1&limit=50&sort=avg_engaged&pub_date_start=24h';
   var url = fetchUrl(type, content);
   return fetchDataByUrl(url);
 }

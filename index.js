@@ -22,5 +22,5 @@ app.listen(app.get('port'), function() {
     engagementPost();
     socialPost();
     appleLohPost();
-  }, 5000);
+  }, 10000);
 })

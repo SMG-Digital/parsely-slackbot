@@ -4,13 +4,13 @@ var Slack = require('slack-node');
 var mongoose = require('mongoose');
 var async = require("async");
 var appleLohData = require('./appleLohFetch').appleLohData;
-var appleLohDetailedInfo = require('./appleLohFetch').appleLohDetailedInfo;
 var async = require("async");
 var eachLimit = async.eachLimit;
 
 var findArticleAppleLohTask = require('./appleLohTasks').findArticleAppleLohTask;
 var notifySlackAppleLohTask = require('./appleLohTasks').notifySlackAppleLohTask;
 var saveArticleAppleLohTask = require('./appleLohTasks').saveArticleAppleLohTask;
+var getContextTask = require('./appleLohTasks').getContextTask;
 
 const CONCURRENCY = 4;
 
@@ -32,31 +32,27 @@ function getArticleHits(slack) {
   });
 
   function processArticle(data, done) {
-    appleLohDetailedInfo(data.url).then(function(data){
-      var tasks = [];
-      var context = {
-        link: data[0].link,
-        title: data[0].title,
-        hits: data[0]._hits,
-        thumb_url_medium: data[0].thumb_url_medium,
-        author: data[0].author,
-        slack: slack
-      };
+    var tasks = [];
+    var context = {};
 
-      tasks.push(function(done) {
-        findArticleAppleLohTask(context, done);
-      });
-
-      tasks.push(function(done) {
-        notifySlackAppleLohTask(context, done);
-      });
-
-      tasks.push(function(done) {
-        saveArticleAppleLohTask(context, done);
-      });
-
-      async.series(tasks, done);
+    tasks.push(function(done) {
+      getContextTask(data.url, context, slack, done);
     });
+
+    tasks.push(function(done) {
+      findArticleAppleLohTask(context, done);
+    });
+
+    tasks.push(function(done) {
+      notifySlackAppleLohTask(context, done);
+    });
+
+    tasks.push(function(done) {
+      saveArticleAppleLohTask(context, done);
+    });
+
+    async.series(tasks, done);
+
   }
 }
 

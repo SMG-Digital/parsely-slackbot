@@ -2,6 +2,24 @@
 var Article = require('./articleSchema.js');
 var appleLohText = require('./appleLohText.js');
 var appleLohThreshold = require('./appleLohThreshold.js');
+var appleLohDetailedInfo = require('./appleLohFetch').appleLohDetailedInfo;
+
+function getContextTask(url, context, slack, done) {
+  appleLohDetailedInfo(url).then(function(data){
+    Object.assign(context, {
+      link: data[0].link,
+      title: data[0].title,
+      hits: data[0]._hits,
+      thumb_url_medium: data[0].thumb_url_medium,
+      author: data[0].author,
+      slack: slack
+    });
+    done();
+  }).catch(function(err){
+    console.log("error from appleLohDetailedInfo: ", err);
+    done(err);
+  });
+}
 
 function findArticleAppleLohTask(context, done) {
   Article.findOne({link: context.link}, function (err, article){
@@ -52,5 +70,6 @@ function saveArticleAppleLohTask(context, done) {
   module.exports = {
     findArticleAppleLohTask: findArticleAppleLohTask,
     notifySlackAppleLohTask: notifySlackAppleLohTask,
-    saveArticleAppleLohTask: saveArticleAppleLohTask
+    saveArticleAppleLohTask: saveArticleAppleLohTask,
+    getContextTask: getContextTask
   };

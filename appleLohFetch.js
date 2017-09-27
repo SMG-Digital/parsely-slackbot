@@ -8,6 +8,14 @@ function checkArticle(item) {
   }
 }
 
+function filterDuplicate(itemsParent) {
+  var test = itemsParent.items.filter(checkArticle);
+  test = test.filter((items, index, self) =>
+    self.findIndex((list) => {
+      return list.title === items.title;
+    }) === index);
+  return test;
+}
 
 function appleLohData() {
   var url = 'https://loh-dashboard.s3.us-east-2.amazonaws.com/data.json';
@@ -16,8 +24,8 @@ function appleLohData() {
     return res.json();
   }).then(function(json) {
     return json;
-  }).then(function(items) {
-    return items.items.filter(checkArticle);
+  }).then(function(itemsParent) {
+    return filterDuplicate(itemsParent);
   }).catch(function(err){
     console.log("error from appleLohData: ", err);
     done(err);
@@ -25,7 +33,7 @@ function appleLohData() {
 }
 
 function appleLohDetailedInfo(articleUrl) {
-  var type = '/analytics/posts';
+  var type = '/analytics/post/detail';
   var content = '&url=' + encodeURIComponent(articleUrl);
   var url = fetchUrl(type, content);
   return fetchDataByUrl(url);

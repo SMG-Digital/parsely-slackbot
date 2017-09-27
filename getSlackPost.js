@@ -1,7 +1,7 @@
 function getSlackPost(text, thumb_url_medium, author, hits, shares){
   return (
     {
-      channel: '#parselybot',
+      channel: '#parsely_alert',
       username: 'thestar bot',
       'attachments':[
         {

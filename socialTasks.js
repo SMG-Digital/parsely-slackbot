@@ -33,6 +33,7 @@ function getSocialRefTask(context, done) {
       }
     }
     context.referrerPercentage = referrer[socialOrder]._hits / totalReferrerClick;
+    context.socialHits = referrer[socialOrder]._hits;
     done();
   }).catch(function(err){
     console.log("error from socialReferrer: ", err);
@@ -50,7 +51,7 @@ function notifySlackTask(context, done) {
   if (context.article.referrerHistory) {
     currentReferrer = context.article.referrerHistory;
   }
-  text = socialText.socialText(context.referrerPercentage, currentReferrer, articleInfo, context.article);
+  text = socialText.socialText(context.socialHits, context.referrerPercentage, currentReferrer, articleInfo, context.article);
   if (text !== null) {
     socialThreshold.socialThreshold(context.link, text, context.slack, context.thumb_url_medium, context.author, context.hits);
   }
